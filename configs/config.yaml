@@ -1,0 +1,44 @@
+project:
+  name: "US Accidents EDA Portfolio"
+  version: "1.0.0"
+  description: "Comprehensive EDA and ML analysis of US traffic accidents (2016-2023)"
+
+paths:
+  raw_data: "data/raw/US_Accidents_March23.csv"
+  interim_data: "data/interim/accidents_cleaned.parquet"
+  processed_data: "data/processed/accidents_features.parquet"
+  models_dir: "models/"
+  reports_dir: "reports/"
+  figures_dir: "reports/figures/"
+  logs_dir: "logs/"
+
+data:
+  sample_size: null          # null = use full dataset; set int for dev (e.g. 500000)
+  random_state: 42
+  test_size: 0.2
+  val_size: 0.1
+  target_column: "Severity"
+  chunksize: 100000          # for chunked reading of large CSV
+
+preprocessing:
+  drop_threshold_missing: 0.5   # drop columns with >50% missing
+  outlier_iqr_factor: 3.0
+  severity_binary_threshold: 3  # Severity >= 3 → "High" (1), else "Low" (0)
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "accidents_db"
+  user: "postgres"
+  password: "${DB_PASSWORD}"    # set in .env
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+
+dashboard:
+  host: "127.0.0.1"
+  port: 8050
+  debug: true
+  api_base_url: "http://localhost:8000"
