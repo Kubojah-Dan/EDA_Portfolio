@@ -56,3 +56,4 @@ logs/
 .env
 *.pem
 *.key
+.github/
