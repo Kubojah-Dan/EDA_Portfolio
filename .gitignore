@@ -31,7 +31,6 @@ models/*.joblib
 models/*.json
 
 # Reports
-reports/eda_report.html
 reports/figures/*.png
 reports/figures/*.svg
 

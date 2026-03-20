@@ -45,18 +45,54 @@ def stat_card(title, value, icon, color="primary"):
     )
 
 
-navbar = dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(dbc.NavLink("Overview", href="/")),
-        dbc.NavItem(dbc.NavLink("EDA", href="/eda")),
-        dbc.NavItem(dbc.NavLink("ML Models", href="/models")),
-        dbc.NavItem(dbc.NavLink("Predict", href="/predict")),
-    ],
-    brand="US Accidents EDA Portfolio",
-    brand_href="/",
-    color="dark",
-    dark=True,
+NAV_STYLE = {
+    "background": "linear-gradient(90deg, #0d1117 0%, #161b22 60%, #1a1f2e 100%)",
+    "borderBottom": "1px solid #30363d",
+    "padding": "0 1.5rem",
+    "boxShadow": "0 2px 12px rgba(0,0,0,0.5)",
+}
+BRAND_STYLE = {
+    "fontWeight": "700",
+    "fontSize": "1.1rem",
+    "letterSpacing": "0.03em",
+    "color": "#e6edf3",
+    "textDecoration": "none",
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "10px",
+}
+NAV_LINK_STYLE = {
+    "color": "#8b949e",
+    "fontWeight": "500",
+    "fontSize": "0.9rem",
+    "padding": "0.6rem 1rem",
+    "borderRadius": "6px",
+    "transition": "all 0.2s",
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "6px",
+    "textDecoration": "none",
+}
+
+navbar = dbc.Navbar(
+    dbc.Container([
+        html.A(
+            html.Div([
+                html.I(className="fa fa-car-crash", style={"color": "#f85149", "fontSize": "1.3rem"}),
+                html.Span("US Accidents", style={"color": "#e6edf3"}),
+                html.Span(" EDA Portfolio", style={"color": "#58a6ff"}),
+            ], style={"display": "flex", "alignItems": "center", "gap": "8px"}),
+            href="/", style=BRAND_STYLE,
+        ),
+        dbc.NavbarToggler(id="navbar-toggler"),
+        dbc.Collapse(
+            dbc.Nav(id="nav-links", navbar=True, className="ms-auto gap-1"),
+            id="navbar-collapse", navbar=True,
+        ),
+    ], fluid=True),
+    style=NAV_STYLE,
     className="mb-4",
+    dark=True,
 )
 
 # -- Pages ---------------------------------------------------------------------
@@ -207,11 +243,53 @@ def predict_layout():
 
 # -- App layout ----------------------------------------------------------------
 
+app.index_string = app.index_string.replace(
+    "</head>",
+    "<style>.nav-link-custom:hover{color:#e6edf3 !important;background:rgba(177,186,196,0.12) !important;}</style></head>"
+)
+
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
     navbar,
     html.Div(id="page-content"),
 ])
+
+
+@app.callback(
+    Output("navbar-collapse", "is_open"),
+    Input("navbar-toggler", "n_clicks"),
+    State("navbar-collapse", "is_open"),
+    prevent_initial_call=True,
+)
+def toggle_navbar(n, is_open):
+    return not is_open
+
+
+@app.callback(
+    Output("nav-links", "children"),
+    Input("url", "pathname"),
+)
+def update_nav_active(pathname):
+    pages = [
+        ("/",        "fa-chart-bar", "Overview"),
+        ("/eda",     "fa-search",    "EDA"),
+        ("/models",  "fa-robot",     "ML Models"),
+        ("/predict", "fa-bolt",      "Predict"),
+    ]
+    items = []
+    for href, icon, label in pages:
+        is_active = pathname == href
+        style = {
+            **NAV_LINK_STYLE,
+            "color": "#e6edf3" if is_active else "#8b949e",
+            "background": "rgba(31,111,235,0.15)" if is_active else "transparent",
+            "border": "1px solid #1f6feb" if is_active else "1px solid transparent",
+        }
+        items.append(dbc.NavItem(html.A(
+            [html.I(className=f"fa {icon}"), f" {label}"],
+            href=href, style=style, className="nav-link-custom",
+        )))
+    return items
 
 
 # -- Routing -------------------------------------------------------------------
@@ -250,13 +328,14 @@ def update_overview(_):
         dbc.Col(stat_card("States Covered", "49", "fa-map", "success"), md=3),
     ], className="g-3")
 
-    # Severity distribution
+    # Severity distribution — must use DataFrame, not raw lists
     sev_data = stats.get("by_severity", {})
+    sev_df = pd.DataFrame({"Severity": list(sev_data.keys()), "Count": list(sev_data.values())})
+    sev_df["Severity"] = sev_df["Severity"].astype(str)
     sev_fig = px.bar(
-        x=list(sev_data.keys()), y=list(sev_data.values()),
-        labels={"x": "Severity", "y": "Count"},
+        sev_df, x="Severity", y="Count", color="Severity",
+        labels={"Severity": "Severity Level", "Count": "Accident Count"},
         title="Accidents by Severity Level",
-        color=list(sev_data.keys()),
         color_discrete_sequence=px.colors.diverging.RdYlGn[::-1],
         template="plotly_dark",
     )
@@ -373,16 +452,29 @@ def update_eda(selection):
         try:
             data = requests.get(f"{API_BASE}/eda/road-features", timeout=30).json()
             df = pd.DataFrame(data)
-            main_fig = px.bar(df, x="feature", y="accident_count",
-                              title="Accidents at Road Features", template="plotly_dark",
-                              color="avg_severity", color_continuous_scale="RdYlGn_r")
-            sec_fig = px.bar(df, x="feature", y="avg_severity",
-                             title="Avg Severity at Road Features", template="plotly_dark",
-                             color="avg_severity", color_continuous_scale="RdYlGn_r")
-            heat_fig = px.scatter(df, x="accident_count", y="avg_severity", text="feature",
-                                  title="Accident Count vs Avg Severity per Feature",
-                                  template="plotly_dark", size="accident_count",
-                                  color="avg_severity", color_continuous_scale="RdYlGn_r")
+            df["feature_count"] = df["feature_count"].astype(str)
+            main_fig = px.bar(
+                df, x="feature_count", y="accident_count",
+                title="Accidents by Road Feature Count",
+                template="plotly_dark",
+                color="avg_severity", color_continuous_scale="RdYlGn_r",
+                labels={"feature_count": "# Road Features Present", "accident_count": "Accident Count"},
+            )
+            sec_fig = px.bar(
+                df, x="feature_count", y="avg_severity",
+                title="Avg Severity by Road Feature Count",
+                template="plotly_dark",
+                color="avg_severity", color_continuous_scale="RdYlGn_r",
+                labels={"feature_count": "# Road Features Present", "avg_severity": "Avg Severity"},
+            )
+            heat_fig = px.scatter(
+                df, x="accident_count", y="avg_severity",
+                text="feature_count", size="accident_count",
+                title="Accident Volume vs Avg Severity",
+                template="plotly_dark",
+                color="avg_severity", color_continuous_scale="RdYlGn_r",
+                labels={"accident_count": "Accident Count", "avg_severity": "Avg Severity"},
+            )
             heat_fig.update_traces(textposition="top center")
         except Exception:
             main_fig, sec_fig, heat_fig = empty, empty, empty

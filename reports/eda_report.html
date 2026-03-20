@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>US Accidents EDA Report</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#14213d; --muted:#5c677d; --accent:#d97706; --line:#d6deeb; --shadow:0 14px 30px rgba(20,33,61,.08); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Segoe UI", Tahoma, sans-serif; color:var(--ink); background:radial-gradient(circle at top right, rgba(217,119,6,.10), transparent 28%), linear-gradient(180deg, #eef3fb 0%, var(--bg) 38%, #eef2f7 100%); line-height:1.6; }
+    .page { max-width:1180px; margin:0 auto; padding:40px 24px 64px; }
+    .hero { background:linear-gradient(135deg, #102542 0%, #1d3557 55%, #8d5524 100%); color:#fff; padding:40px; border-radius:28px; box-shadow:var(--shadow); }
+    .hero h1 { margin:0 0 8px; font-size:2.6rem; line-height:1.15; }
+    .hero p { margin:8px 0 0; color:rgba(255,255,255,.88); max-width:760px; }
+    .meta { margin-top:18px; font-size:.95rem; color:rgba(255,255,255,.72); }
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin:24px 0 0; }
+    .card { background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.15); border-radius:18px; padding:18px 20px; }
+    .card .label { display:block; font-size:.85rem; color:rgba(255,255,255,.75); text-transform:uppercase; letter-spacing:.08em; }
+    .card .value { display:block; margin-top:6px; font-size:1.55rem; font-weight:700; }
+    section { margin-top:28px; background:var(--card); border:1px solid rgba(214,222,235,.8); border-radius:24px; padding:28px; box-shadow:var(--shadow); }
+    h2 { margin:0 0 8px; font-size:1.65rem; }
+    h3 { margin:22px 0 10px; font-size:1.15rem; }
+    .lede { color:var(--muted); margin:0 0 18px; }
+    .split { display:grid; grid-template-columns:1.2fr 1fr; gap:22px; align-items:start; }
+    .gallery { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-top:18px; }
+    figure { margin:0; background:#fff; border:1px solid var(--line); border-radius:18px; padding:12px; }
+    figure img { width:100%; border-radius:12px; display:block; }
+    figcaption { font-size:.92rem; color:var(--muted); margin-top:10px; }
+    .styled-table { width:100%; border-collapse:collapse; border-radius:16px; overflow:hidden; font-size:.96rem; }
+    .styled-table th { background:#143d59; color:#fff; text-align:left; padding:12px 14px; }
+    .styled-table td { padding:11px 14px; border-bottom:1px solid #e7edf4; vertical-align:top; }
+    .styled-table tr:nth-child(even) td { background:#f9fbfd; }
+    .bullet-list { margin:0; padding-left:20px; }
+    .bullet-list li { margin-bottom:10px; }
+    .chip-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .chip { background:#fff3e6; color:#8a4b08; border:1px solid #f4d3ae; border-radius:999px; padding:8px 12px; font-size:.9rem; }
+    .note { margin-top:18px; padding:14px 16px; border-left:4px solid var(--accent); background:#fff7ed; color:#7c4a12; border-radius:12px; }
+    .footer { margin-top:24px; text-align:center; color:var(--muted); font-size:.9rem; }
+    @media (max-width:900px) { .split { grid-template-columns:1fr; } .hero { padding:28px; } .hero h1 { font-size:2rem; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <h1>US Accidents EDA Portfolio EDA Report</h1>
+      <p>Portfolio-ready summary of the cleaned US Accidents dataset, engineered features, and the held-out model evaluation artifacts produced by this repository.</p>
+      <div class="meta">Generated on 2026-03-20 21:57 from project artifacts in <code>data/</code>, <code>models/</code>, and <code>reports/figures/</code>.</div>
+      <div class="card-grid">
+        <div class="card"><span class="label">Accident Records</span><span class="value">7,728,394</span></div>
+        <div class="card"><span class="label">Date Range</span><span class="value">Jan 2016 to Mar 2023</span></div>
+        <div class="card"><span class="label">High Severity Share</span><span class="value">19.46%</span></div>
+        <div class="card"><span class="label">Best Model</span><span class="value">XGBoost</span></div>
+      </div>
+    </div>
+
+    <section>
+      <h2>Executive Snapshot</h2>
+      <p class="lede">The project analyzes 7,728,394 US traffic accidents spanning January 14, 2016 through March 31, 2023. After cleaning, the repository works from 33 analytical columns, engineers 32 modeling features, and evaluates four binary classifiers where the target is <code>Severity &gt;= 3</code>.</p>
+      <ul class="bullet-list"><li>Severity 2 dominates the dataset at 79.67%, while the modeling target (Severity 3-4) accounts for 19.46%.</li><li>Accidents cluster around commute windows, with the highest hourly volumes at 7:00 and 16:00.</li><li>Friday has the highest accident count, and 69.33% of incidents occur during daylight.</li><li>California, Florida, and Texas lead total volume, with XGBoost delivering the strongest held-out performance (test AUC 0.9258).</li></ul>
+      <div class="chip-row">
+        <span class="chip">Train / Val / Test: 5,409,875 / 772,840 / 1,545,679</span>
+        <span class="chip">Median distance: 0.03 mi</span>
+        <span class="chip">Median duration: 74.83 min</span>
+        <span class="chip">Winter-month share: 29.22%</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Severity And Time Patterns</h2>
+      <p class="lede">Severity class 2 dominates the raw label distribution, while high-severity accidents remain a meaningful minority large enough to support supervised modeling. Temporal volume is strongest in winter months, on weekdays, and around morning and evening commute windows.</p>
+      <div class="split">
+        <div><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Severity</th>
+      <th>Accidents</th>
+      <th>Share</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>67,366</td>
+      <td>0.87%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>6,156,981</td>
+      <td>79.67%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>1,299,337</td>
+      <td>16.81%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>204,710</td>
+      <td>2.65%</td>
+    </tr>
+  </tbody>
+</table></div>
+        <div><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Year</th>
+      <th>Accidents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2,016</td>
+      <td>410,821</td>
+    </tr>
+    <tr>
+      <td>2,017</td>
+      <td>718,093</td>
+    </tr>
+    <tr>
+      <td>2,018</td>
+      <td>893,426</td>
+    </tr>
+    <tr>
+      <td>2,019</td>
+      <td>954,303</td>
+    </tr>
+    <tr>
+      <td>2,020</td>
+      <td>1,178,913</td>
+    </tr>
+    <tr>
+      <td>2,021</td>
+      <td>1,563,753</td>
+    </tr>
+    <tr>
+      <td>2,022</td>
+      <td>1,762,452</td>
+    </tr>
+    <tr>
+      <td>2,023</td>
+      <td>246,633</td>
+    </tr>
+  </tbody>
+</table></div>
+      </div>
+      <div class="gallery">
+        <figure>
+          <img src="figures/eda_severity_distribution.png" alt="Severity distribution">
+          <figcaption>Severity volume is concentrated in class 2, with classes 3 and 4 defining the modeling target.</figcaption>
+        </figure>
+        <figure>
+          <img src="figures/eda_temporal_trends.png" alt="Temporal trends">
+          <figcaption>Year, month, hour, and weekday views show a strong commute signature and seasonal peaks.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>Geography And Weather</h2>
+      <p class="lede">Geographic concentration is led by large, high-traffic states and metro areas. Fair and cloudy conditions account for the largest share of incidents by volume, but the highest severe-accident rate appears in the repository's rain/storm bucket.</p>
+      <div class="split">
+        <div>
+          <h3>Top States</h3>
+          <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>State</th>
+      <th>Accidents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CA</td>
+      <td>1,741,433</td>
+    </tr>
+    <tr>
+      <td>FL</td>
+      <td>880,192</td>
+    </tr>
+    <tr>
+      <td>TX</td>
+      <td>582,837</td>
+    </tr>
+    <tr>
+      <td>SC</td>
+      <td>382,557</td>
+    </tr>
+    <tr>
+      <td>NY</td>
+      <td>347,960</td>
+    </tr>
+    <tr>
+      <td>NC</td>
+      <td>338,199</td>
+    </tr>
+    <tr>
+      <td>VA</td>
+      <td>303,301</td>
+    </tr>
+    <tr>
+      <td>PA</td>
+      <td>296,620</td>
+    </tr>
+    <tr>
+      <td>MN</td>
+      <td>192,084</td>
+    </tr>
+    <tr>
+      <td>OR</td>
+      <td>179,660</td>
+    </tr>
+  </tbody>
+</table>
+          <h3>Top Cities</h3>
+          <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>City</th>
+      <th>Accidents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Miami, FL</td>
+      <td>186,801</td>
+    </tr>
+    <tr>
+      <td>Houston, TX</td>
+      <td>169,428</td>
+    </tr>
+    <tr>
+      <td>Los Angeles, CA</td>
+      <td>156,491</td>
+    </tr>
+    <tr>
+      <td>Charlotte, NC</td>
+      <td>138,345</td>
+    </tr>
+    <tr>
+      <td>Dallas, TX</td>
+      <td>130,303</td>
+    </tr>
+    <tr>
+      <td>Orlando, FL</td>
+      <td>109,690</td>
+    </tr>
+    <tr>
+      <td>Austin, TX</td>
+      <td>96,604</td>
+    </tr>
+    <tr>
+      <td>Raleigh, NC</td>
+      <td>86,066</td>
+    </tr>
+    <tr>
+      <td>Nashville, TN</td>
+      <td>72,670</td>
+    </tr>
+    <tr>
+      <td>Baton Rouge, LA</td>
+      <td>71,588</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+        <div>
+          <h3>Top Weather Conditions</h3>
+          <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Weather Condition</th>
+      <th>Accidents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fair</td>
+      <td>2,734,261</td>
+    </tr>
+    <tr>
+      <td>Mostly Cloudy</td>
+      <td>1,016,195</td>
+    </tr>
+    <tr>
+      <td>Cloudy</td>
+      <td>817,082</td>
+    </tr>
+    <tr>
+      <td>Clear</td>
+      <td>808,743</td>
+    </tr>
+    <tr>
+      <td>Partly Cloudy</td>
+      <td>698,972</td>
+    </tr>
+    <tr>
+      <td>Overcast</td>
+      <td>382,866</td>
+    </tr>
+    <tr>
+      <td>Light Rain</td>
+      <td>352,957</td>
+    </tr>
+    <tr>
+      <td>Scattered Clouds</td>
+      <td>204,829</td>
+    </tr>
+    <tr>
+      <td>Light Snow</td>
+      <td>128,680</td>
+    </tr>
+    <tr>
+      <td>Fog</td>
+      <td>99,238</td>
+    </tr>
+  </tbody>
+</table>
+          <h3>High-Severity Rate By Weather Category</h3>
+          <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Weather Category</th>
+      <th>High-Severity Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rain/Storm</td>
+      <td>22.84%</td>
+    </tr>
+    <tr>
+      <td>Cloudy</td>
+      <td>21.65%</td>
+    </tr>
+    <tr>
+      <td>Snow/Ice</td>
+      <td>19.52%</td>
+    </tr>
+    <tr>
+      <td>Clear</td>
+      <td>17.14%</td>
+    </tr>
+    <tr>
+      <td>Fog/Haze</td>
+      <td>16.19%</td>
+    </tr>
+    <tr>
+      <td>Other</td>
+      <td>10.61%</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+      </div>
+      <div class="gallery">
+        <figure>
+          <img src="figures/eda_state_accidents.png" alt="Top states">
+          <figcaption>California is the largest concentration center, followed by Florida and Texas.</figcaption>
+        </figure>
+        <figure>
+          <img src="figures/eda_weather_insights.png" alt="Weather insights">
+          <figcaption>Weather volume is dominated by fair conditions, but severe-event rates rise in rain/storm settings.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>Feature Engineering And Modeling Snapshot</h2>
+      <p class="lede">The modeling pipeline engineers temporal, weather, and categorical encodings before training Logistic Regression, Random Forest, XGBoost, and LightGBM. XGBoost delivers the strongest held-out discrimination, while LightGBM remains a strong speed-performance tradeoff.</p>
+      <table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Model</th>
+      <th>Test AUC</th>
+      <th>Test AP</th>
+      <th>Test F1</th>
+      <th>Test Accuracy</th>
+      <th>Validation AUC</th>
+      <th>Train Time (s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>XGBoost</td>
+      <td>0.9258</td>
+      <td>0.7531</td>
+      <td>0.8600</td>
+      <td>0.8506</td>
+      <td>0.9256</td>
+      <td>762.01</td>
+    </tr>
+    <tr>
+      <td>LightGBM</td>
+      <td>0.9171</td>
+      <td>0.7263</td>
+      <td>0.8280</td>
+      <td>0.8120</td>
+      <td>0.9167</td>
+      <td>271.57</td>
+    </tr>
+    <tr>
+      <td>Random Forest</td>
+      <td>0.8953</td>
+      <td>0.6697</td>
+      <td>0.7880</td>
+      <td>0.7652</td>
+      <td>0.8948</td>
+      <td>4397.04</td>
+    </tr>
+    <tr>
+      <td>Logistic Regression</td>
+      <td>0.7752</td>
+      <td>0.3929</td>
+      <td>0.7179</td>
+      <td>0.6861</td>
+      <td>0.7732</td>
+      <td>22.88</td>
+    </tr>
+  </tbody>
+</table>
+      <div class="gallery">
+        <figure>
+          <img src="figures/roc_curves.png" alt="ROC curves">
+          <figcaption>Held-out ROC comparison across all trained models.</figcaption>
+        </figure>
+        <figure>
+          <img src="figures/pr_curves.png" alt="PR curves">
+          <figcaption>Precision-recall behavior is especially relevant given the class imbalance in severe accidents.</figcaption>
+        </figure>
+      </div>
+      <div class="note">Best test result: XGBoost with test AUC 0.9258, average precision 0.7531, and weighted F1 0.8600.</div>
+    </section>
+
+    <section>
+      <h2>Data Caveats</h2>
+      <p class="lede">These are the most important constraints to keep in mind when interpreting this project’s results.</p>
+      <ul class="bullet-list"><li>Visibility is constant at 10.0 miles after cleaning, so it contributes little usable variation to downstream analysis.</li><li>All road-infrastructure flags were removed before feature engineering, leaving `road_feature_count` constant at 0 for every row.</li><li>The 2023 slice only covers data through March 31, 2023, so year-over-year totals for 2023 are not directly comparable.</li></ul>
+    </section>
+
+    <div class="footer">Companion PDF: <code>reports/final_report.pdf</code></div>
+  </div>
+</body>
+</html>

@@ -226,18 +226,19 @@ def top_cities(top_n: int = Query(15, ge=5, le=50)):
 @app.get("/eda/road-features", tags=["EDA"])
 def road_features_impact():
     df = _get_df()
-    infra_cols = ["Junction", "Traffic_Signal", "Crossing", "Railway",
-                  "Roundabout", "Station", "Stop", "Bump"]
-    present = [c for c in infra_cols if c in df.columns]
-    if not present:
-        raise HTTPException(404, "Road feature columns not found")
-    result = []
-    for col in present:
-        mask = df[col].astype(bool)
-        avg_sev = float(df.loc[mask, "Severity"].mean()) if "Severity" in df.columns and mask.any() else 0.0
-        result.append({
-            "feature": col,
-            "accident_count": int(mask.sum()),
-            "avg_severity": round(avg_sev, 3),
-        })
-    return result
+    if "road_feature_count" not in df.columns:
+        raise HTTPException(404, "road_feature_count column not found")
+    dist = df["road_feature_count"].value_counts().sort_index().reset_index()
+    dist.columns = ["feature_count", "accident_count"]
+    if "Severity" in df.columns:
+        avg_sev = (
+            df.groupby("road_feature_count")["Severity"]
+            .mean()
+            .reset_index()
+            .rename(columns={"road_feature_count": "feature_count", "Severity": "avg_severity"})
+        )
+        dist = dist.merge(avg_sev, on="feature_count", how="left")
+    else:
+        dist["avg_severity"] = 0.0
+    dist["avg_severity"] = dist["avg_severity"].round(3)
+    return dist.to_dict(orient="records")
