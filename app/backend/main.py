@@ -1,7 +1,3 @@
-"""
-FastAPI backend for the US Accidents EDA Portfolio.
-Endpoints: health, stats, predictions, model metrics, EDA data.
-"""
 import os
 import sys
 import json
@@ -40,7 +36,7 @@ async def lifespan(app: FastAPI):
     """Pre-load everything at startup so first requests are fast."""
     cfg = load_config()
 
-    # DB tables (graceful)
+    # DB tables 
     try:
         db_models.Base.metadata.create_all(bind=engine)
     except Exception as e:
@@ -78,7 +74,7 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 log.warning(f"Could not pre-load predict function: {e}")
 
-    yield  # app runs here
+    yield  
 
     log.info("Shutting down API.")
 

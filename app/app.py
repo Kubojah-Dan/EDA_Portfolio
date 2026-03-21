@@ -1,9 +1,4 @@
-﻿"""
-app.py
-Convenience launcher: starts FastAPI backend and Dash frontend in separate processes.
-Usage: python app/app.py
-"""
-import os
+﻿import os
 import sys
 import subprocess
 import time

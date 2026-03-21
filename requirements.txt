@@ -19,7 +19,6 @@ lightgbm==4.3.0
 imbalanced-learn==0.12.2
 statsmodels==0.14.2
 
-# Deep Learning (optional, for LSTM notebook)
 # tensorflow==2.16.1
 
 # Backend

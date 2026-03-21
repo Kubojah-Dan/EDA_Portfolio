@@ -1,0 +1,387 @@
+:root {
+  --app-bg: #07111d;
+  --border: rgba(143, 168, 201, 0.22);
+  --border-strong: rgba(125, 211, 252, 0.3);
+  --text: #edf5ff;
+  --muted: #b7c5db;
+  --primary: #67d2ff;
+  --secondary: #7cf3bc;
+  --warning: #ffcf6b;
+  --danger: #ff8a80;
+  --shadow: 0 24px 60px rgba(3, 7, 18, 0.42);
+}
+
+html,
+body {
+  min-height: 100%;
+  background-color: var(--app-bg);
+}
+
+body {
+  font-family: "Aptos", "Segoe UI Variable Text", "Trebuchet MS", sans-serif;
+  color: var(--text);
+  background-image:
+    linear-gradient(135deg, rgba(4, 11, 21, 0.96) 0%, rgba(9, 21, 37, 0.92) 44%, rgba(15, 36, 59, 0.9) 100%),
+    url("/assets/dashboard-bg.svg");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(103, 210, 255, 0.14), transparent 34%),
+    radial-gradient(circle at 85% 12%, rgba(124, 243, 188, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%);
+}
+
+a {
+  color: inherit;
+}
+
+#_dash-app-content,
+.app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.portfolio-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  backdrop-filter: blur(18px);
+}
+
+.page-shell {
+  padding: 0 1rem 2rem;
+}
+
+.page-hero,
+.section-card,
+.metric-card,
+.info-card,
+.table-card {
+  background: linear-gradient(180deg, rgba(13, 24, 41, 0.9) 0%, rgba(9, 18, 31, 0.78) 100%);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.page-hero {
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.page-hero .card-body {
+  padding: 1.75rem;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.hero-title {
+  font-family: "Aptos Display", "Segoe UI Variable Display", "Aptos", sans-serif;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.05;
+  margin-bottom: 0.75rem;
+}
+
+.hero-description,
+.section-description,
+.metric-label,
+.metric-detail,
+.hero-metric-label,
+.insight-list {
+  color: var(--muted);
+}
+
+.hero-description {
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 46rem;
+  margin-bottom: 1.25rem;
+}
+
+.hero-pill-row,
+.result-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero-pill,
+.section-pill,
+.result-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  background: rgba(16, 30, 48, 0.62);
+  color: #dff4ff;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.hero-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.hero-metric {
+  padding: 1rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(18, 33, 52, 0.86), rgba(12, 22, 37, 0.72));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+}
+
+.hero-metric-value,
+.section-heading {
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.section-heading {
+  font-size: 1.2rem;
+}
+
+.section-description {
+  margin: 0.35rem 0 0;
+  line-height: 1.65;
+}
+
+.section-topline {
+  margin-bottom: 1rem;
+}
+
+.metric-card,
+.section-card,
+.info-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.metric-card:hover,
+.section-card:hover,
+.info-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+}
+
+.metric-card .card-body,
+.section-card .card-body,
+.info-card .card-body,
+.table-card .card-body {
+  padding: 1.35rem;
+}
+
+.metric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(103, 210, 255, 0.94), rgba(124, 243, 188, 0.72), transparent);
+}
+
+.metric-icon,
+.prediction-placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(103, 210, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(103, 210, 255, 0.18);
+}
+
+.metric-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.prediction-placeholder-icon {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.metric-card.accent-danger .metric-icon { background: rgba(255, 138, 128, 0.16); color: var(--danger); }
+.metric-card.accent-warning .metric-icon { background: rgba(255, 207, 107, 0.16); color: var(--warning); }
+.metric-card.accent-info .metric-icon,
+.metric-card.accent-primary .metric-icon { background: rgba(103, 210, 255, 0.14); color: var(--primary); }
+.metric-card.accent-success .metric-icon { background: rgba(124, 243, 188, 0.16); color: var(--secondary); }
+
+.dashboard-graph {
+  min-height: 340px;
+}
+
+.insight-list {
+  padding-left: 1.1rem;
+  margin-bottom: 0;
+}
+
+.insight-list li {
+  margin-bottom: 0.65rem;
+  line-height: 1.6;
+}
+
+.prediction-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 0.25rem;
+}
+
+.card-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(143, 168, 201, 0.14) !important;
+  color: var(--text) !important;
+  font-weight: 700;
+  padding: 1.15rem 1.35rem 0.9rem;
+}
+
+.table-card .dash-table-container .dash-spreadsheet-container {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.form-label,
+label {
+  color: #dcecff;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.form-control,
+.form-select,
+.dash-dropdown .Select-control,
+.dash-dropdown .Select-menu-outer {
+  border-radius: 14px !important;
+}
+
+.form-control,
+.form-select {
+  background: rgba(10, 18, 30, 0.9) !important;
+  border: 1px solid rgba(143, 168, 201, 0.2) !important;
+  color: var(--text) !important;
+  min-height: 44px;
+}
+
+.form-control:focus,
+.form-select:focus,
+.is-focused:not(.is-open) > .Select-control {
+  border-color: rgba(103, 210, 255, 0.52) !important;
+  box-shadow: 0 0 0 0.2rem rgba(103, 210, 255, 0.16) !important;
+}
+
+.Select-control,
+.Select-menu-outer,
+.Select-menu {
+  background: rgba(10, 18, 30, 0.96) !important;
+  border: 1px solid rgba(143, 168, 201, 0.2) !important;
+  color: var(--text) !important;
+}
+
+.Select--single > .Select-control .Select-value,
+.Select-placeholder,
+.Select-value-label,
+.Select-input > input,
+.Select-arrow-zone,
+.Select-clear-zone,
+.VirtualizedSelectOption {
+  color: var(--text) !important;
+}
+
+.Select-placeholder {
+  color: var(--muted) !important;
+}
+
+.Select-menu-outer {
+  margin-top: 0.35rem;
+  box-shadow: 0 16px 40px rgba(2, 7, 18, 0.5) !important;
+}
+
+.VirtualizedSelectOption {
+  background: rgba(10, 18, 30, 0.96) !important;
+}
+
+.VirtualizedSelectFocusedOption,
+.Select-option.is-focused {
+  background: rgba(103, 210, 255, 0.18) !important;
+  color: var(--text) !important;
+}
+
+.Select-option.is-selected {
+  background: rgba(124, 243, 188, 0.16) !important;
+  color: var(--text) !important;
+}
+
+.btn {
+  border-radius: 14px !important;
+}
+
+.btn-primary {
+  border: none !important;
+  color: #05111c !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #67d2ff 0%, #7cf3bc 100%) !important;
+  box-shadow: 0 16px 36px rgba(70, 190, 226, 0.28);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.nav-link-custom:hover {
+  transform: translateY(-1px);
+}
+
+.nav-link-custom {
+  transition: all 0.2s ease;
+}
+
+.nav-link-custom:hover {
+  color: var(--text) !important;
+  background: rgba(103, 210, 255, 0.1) !important;
+}
+
+.js-plotly-plot .plotly .modebar {
+  background: rgba(7, 16, 29, 0.7) !important;
+  border-radius: 12px;
+}
+
+@media (max-width: 991.98px) {
+  .page-shell {
+    padding: 0 0.35rem 1.75rem;
+  }
+
+  .page-hero .card-body,
+  .metric-card .card-body,
+  .section-card .card-body,
+  .info-card .card-body,
+  .table-card .card-body {
+    padding: 1.1rem;
+  }
+
+  .hero-metric-grid {
+    grid-template-columns: 1fr;
+  }
+}

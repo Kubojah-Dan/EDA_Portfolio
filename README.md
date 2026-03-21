@@ -18,7 +18,7 @@ A comprehensive Machine Learning & Exploratory Data Analysis portfolio built on 
 ```
 ml-eda-portfolio/
 ├── configs/            # config.yaml, model_config.yaml
-├── data/raw/           # US_Accidents_March23.csv (place here)
+├── data/raw/           # US_Accidents_March23.csv 
 ├── src/
 │   ├── data/           # make_dataset, clean_data, build_features
 │   ├── models/         # train_model, evaluate_model, predict_model

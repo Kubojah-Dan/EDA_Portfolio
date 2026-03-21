@@ -1,0 +1,52 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08121E"/>
+      <stop offset="0.45" stop-color="#0C1F34"/>
+      <stop offset="1" stop-color="#14375A"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 220) rotate(18) scale(420 300)">
+      <stop stop-color="#6BD2FF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#6BD2FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1320 200) rotate(35) scale(320 240)">
+      <stop stop-color="#7CF3BC" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7CF3BC" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1160 920) rotate(-18) scale(500 280)">
+      <stop stop-color="#7AA5FF" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#7AA5FF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M80 0H0V80" stroke="#A4DAFF" stroke-opacity="0.06"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#bg)"/>
+  <rect width="1600" height="1200" fill="url(#grid)"/>
+  <rect width="1600" height="1200" fill="url(#glowA)"/>
+  <rect width="1600" height="1200" fill="url(#glowB)"/>
+  <rect width="1600" height="1200" fill="url(#glowC)"/>
+  <g opacity="0.14" stroke="#83DAFF" stroke-width="2">
+    <path d="M-80 178C109 111 227 102 336 155C442 207 519 314 659 309C780 305 867 213 980 190C1119 160 1224 192 1325 245C1429 299 1515 399 1682 360"/>
+    <path d="M-68 393C118 334 247 355 365 409C492 467 598 576 747 555C869 538 939 428 1056 411C1210 388 1357 444 1494 554C1556 603 1620 621 1686 608"/>
+    <path d="M-96 676C62 609 196 610 322 662C479 728 590 834 745 819C886 805 964 678 1088 648C1227 615 1374 664 1496 755C1565 807 1624 830 1698 826"/>
+    <path d="M130 1092C320 870 530 912 750 791C958 677 1116 702 1465 521"/>
+  </g>
+  <g opacity="0.2" stroke="#D9F2FF" stroke-width="1">
+    <path d="M172 274C250 232 323 208 392 224C483 245 564 338 655 339C738 340 811 268 891 249C979 228 1062 248 1167 312"/>
+    <path d="M305 889C415 830 531 790 651 782C769 773 877 772 1000 732C1114 694 1230 625 1388 582"/>
+    <path d="M950 138C1031 123 1122 142 1189 176C1265 215 1326 281 1408 330"/>
+  </g>
+  <g fill="#EAF6FF" fill-opacity="0.18">
+    <circle cx="244" cy="216" r="4"/>
+    <circle cx="514" cy="303" r="5"/>
+    <circle cx="846" cy="246" r="4"/>
+    <circle cx="1168" cy="312" r="5"/>
+    <circle cx="377" cy="409" r="4"/>
+    <circle cx="744" cy="555" r="5"/>
+    <circle cx="1078" cy="649" r="4"/>
+    <circle cx="1438" cy="744" r="5"/>
+    <circle cx="987" cy="734" r="4"/>
+    <circle cx="708" cy="788" r="5"/>
+  </g>
+</svg>
