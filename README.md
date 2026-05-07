@@ -10,6 +10,7 @@ A comprehensive Machine Learning & Exploratory Data Analysis portfolio built on 
 | Visualization | Matplotlib, Seaborn, Plotly |
 | ML | scikit-learn, XGBoost, LightGBM |
 | Backend | FastAPI + SQLAlchemy + PostgreSQL |
+| **Auth/DB** | **SQLite + Werkzeug (Hashing)** |
 | Frontend | Dash + Bootstrap (DARKLY) |
 | DevOps | Docker, GitHub Actions CI |
 
@@ -25,8 +26,8 @@ ml-eda-portfolio/
 │   ├── visualization/  # visualize.py (static + interactive plots)
 │   └── utils/          # logger, helpers
 ├── app/
-│   ├── backend/        # FastAPI (main.py, models, schemas, database)
-│   └── frontend/       # Dash dashboard (dashboard.py)
+│   ├── backend/        # FastAPI, auth_db.py, users.db (SQLite)
+│   └── frontend/       # Dash dashboard (dashboard.py), assets/
 ├── notebooks/          # 6 numbered EDA notebooks
 ├── tests/              # pytest test suite
 └── docs/               # Architecture, API docs, deployment guide
@@ -50,13 +51,29 @@ python src/models/train_model.py
 python src/models/evaluate_model.py
 
 # 4. Launch app
-python app/app.py
+python app/frontend/dashboard.py
 ```
 
 - **Dashboard**: http://localhost:8050
 - **API Docs**: http://localhost:8000/docs
 
 > **Dev tip**: Set `sample_size: 500000` in `configs/config.yaml` for faster iteration.
+
+## 🔐 Authentication & Access
+
+The application now includes a secure entry flow:
+1. **Landing Page**: Overview of project capabilities and stats.
+2. **Sliding Auth**: A modern, animated interface for Login and Signup.
+3. **Session Management**: Access to the interactive dashboard is restricted to authenticated users.
+
+## 📊 Dashboard Pages
+
+1. **Landing** – Project hero, features, and national impact overview
+2. **Auth** – Secure sliding login/signup interface
+3. **Overview** – KPI cards, severity distribution, accidents over time, state choropleth map
+4. **EDA** – Interactive analysis: hourly patterns, weather impact, top cities, road features
+5. **ML Models** – Metrics table, bar chart comparison, radar chart
+6. **Predict** – Real-time severity prediction with probability gauge
 
 ## 🤖 ML Models
 
@@ -68,13 +85,6 @@ python app/app.py
 | LightGBM | Binary classification | `class_weight=balanced` |
 
 **Target**: Severity ≥ 3 → High (1), else Low (0)
-
-## 📊 Dashboard Pages
-
-1. **Overview** – KPI cards, severity distribution, accidents over time, state choropleth map
-2. **EDA** – Interactive analysis: hourly patterns, weather impact, top cities, road features
-3. **ML Models** – Metrics table, bar chart comparison, radar chart
-4. **Predict** – Real-time severity prediction with probability gauge
 
 ## 🧪 Tests
 

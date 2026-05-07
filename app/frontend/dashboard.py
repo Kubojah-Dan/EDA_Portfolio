@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -11,6 +11,7 @@ import requests
 from dash import Input, Output, State, dash_table, dcc, html
 
 from src.utils.helpers import load_config
+from app.backend.auth_db import register_user, verify_user
 
 cfg = load_config()
 API_BASE = cfg["dashboard"]["api_base_url"]
@@ -561,11 +562,114 @@ def predict_layout():
     ], fluid=True, className="page-shell pb-5")
 
 
+def landing_layout():
+    return html.Div([
+        dbc.Container([
+            html.Div([
+                html.H1("US Accidents Portfolio", className="landing-hero-title"),
+                html.P(
+                    "Deep analytics and machine learning on 7.7 million traffic incidents. "
+                    "Discover patterns, evaluate risks, and predict severity in real-time.",
+                    className="landing-hero-subtitle"
+                ),
+                dbc.Button("Launch Dashboard", href="/login", color="primary", size="lg", className="px-5 py-3"),
+            ], className="landing-hero"),
+            
+            html.Div([
+                dbc.Row([
+                    dbc.Col([
+                        html.Div([
+                            html.Div(html.I(className="fa fa-chart-line"), className="feature-icon"),
+                            html.H3("Advanced EDA", className="section-heading"),
+                            html.P("Multi-dimensional analysis of temporal, spatial, and weather-based accident triggers.", className="section-description"),
+                        ], className="feature-card")
+                    ], md=4),
+                    dbc.Col([
+                        html.Div([
+                            html.Div(html.I(className="fa fa-robot"), className="feature-icon"),
+                            html.H3("Predictive ML", className="section-heading"),
+                            html.P("Comparing XGBoost, LightGBM, and Random Forest for high-precision severity classification.", className="section-description"),
+                        ], className="feature-card")
+                    ], md=4),
+                    dbc.Col([
+                        html.Div([
+                            html.Div(html.I(className="fa fa-bolt"), className="feature-icon"),
+                            html.H3("Real-Time API", className="section-heading"),
+                            html.P("FastAPI-powered inference engine delivering sub-second scenario evaluations.", className="section-description"),
+                        ], className="feature-card")
+                    ], md=4),
+                ], className="g-4"),
+            ], className="landing-section"),
+            
+            html.Div([
+                dbc.Row([
+                    dbc.Col([
+                        stat_card("Total Records", "7.7M+", "fa-database", "primary", "2016 - 2023 National Coverage")
+                    ], md=4),
+                    dbc.Col([
+                        stat_card("States Analyzed", "49", "fa-map-marked-alt", "success", "Lower 48 + DC")
+                    ], md=4),
+                    dbc.Col([
+                        stat_card("Model Features", "11+", "fa-cogs", "warning", "Weather, Time, Road Complexity")
+                    ], md=4),
+                ], className="g-4 mb-5"),
+            ]),
+        ], fluid=True)
+    ], className="landing-shell")
+
+
+def auth_layout():
+    return html.Div([
+        dbc.Container([
+            html.Div([
+                # Sign Up Container
+                html.Div([
+                    html.Div([
+                        html.H2("Create Account", className="auth-form-title"),
+                        dbc.Input(id="signup-user", placeholder="Username", type="text", className="mb-3"),
+                        dbc.Input(id="signup-pass", placeholder="Password", type="password", className="mb-3"),
+                        dbc.Button("Sign Up", id="signup-btn", color="primary", className="w-100 mt-2"),
+                        html.Div(id="signup-alert", className="mt-3")
+                    ], className="d-flex flex-column justify-content-center h-100")
+                ], className="form-container sign-up-container"),
+                
+                # Sign In Container
+                html.Div([
+                    html.Div([
+                        html.H2("Welcome Back", className="auth-form-title"),
+                        dbc.Input(id="login-user", placeholder="Username", type="text", className="mb-3"),
+                        dbc.Input(id="login-pass", placeholder="Password", type="password", className="mb-3"),
+                        dbc.Button("Sign In", id="login-btn", color="primary", className="w-100 mt-2"),
+                        html.Div(id="login-alert", className="mt-3")
+                    ], className="d-flex flex-column justify-content-center h-100")
+                ], className="form-container sign-in-container"),
+                
+                # Overlay Container
+                html.Div([
+                    html.Div([
+                        html.Div([
+                            html.H1("Welcome Back!"),
+                            html.P("To keep connected with us please login with your personal info", className="mb-4"),
+                            html.Button("Sign In", id="toggle-signin", className="auth-btn-ghost")
+                        ], className="overlay-panel overlay-left"),
+                        html.Div([
+                            html.H1("Hello, Friend!"),
+                            html.P("Enter your details and start your journey with us", className="mb-4"),
+                            html.Button("Sign Up", id="toggle-signup", className="auth-btn-ghost")
+                        ], className="overlay-panel overlay-right")
+                    ], className="overlay")
+                ], className="overlay-container")
+            ], id="auth-container", className="auth-container")
+        ], className="auth-shell")
+    ])
+
+
 # -- App layout ----------------------------------------------------------------
 
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
-    navbar,
+    dcc.Store(id='auth-store', storage_type='session'),
+    html.Div(id="nav-container"),
     html.Div(id="page-content"),
 ], className="app-shell")
 
@@ -609,8 +713,37 @@ def update_nav_active(pathname):
 
 # -- Routing -------------------------------------------------------------------
 
-@app.callback(Output("page-content", "children"), Input("url", "pathname"))
-def display_page(pathname):
+@app.callback(
+    Output("nav-container", "children"),
+    Input("url", "pathname"),
+    Input("auth-store", "data")
+)
+def toggle_navbar_visibility(pathname, auth_data):
+    # Only show navbar if logged in and not on landing page
+    if auth_data and auth_data.get("logged_in") and pathname not in ["/", "/login"]:
+        return navbar
+    return None
+
+
+@app.callback(
+    Output("page-content", "children"),
+    Input("url", "pathname"),
+    State("auth-store", "data")
+)
+def display_page(pathname, auth_data):
+    if pathname == "/":
+        if auth_data and auth_data.get("logged_in"):
+            return overview_layout()
+        return landing_layout()
+    elif pathname == "/login":
+        if auth_data and auth_data.get("logged_in"):
+            return dcc.Location(id="redirect-to-home", pathname="/")
+        return auth_layout()
+    
+    # Protect dashboard routes
+    if not auth_data or not auth_data.get("logged_in"):
+        return dcc.Location(id="redirect-to-login", pathname="/login")
+        
     if pathname == "/eda":
         return eda_layout()
     elif pathname == "/models":
@@ -618,6 +751,61 @@ def display_page(pathname):
     elif pathname == "/predict":
         return predict_layout()
     return overview_layout()
+
+
+# -- Auth Callbacks -----------------------------------------------------------
+
+@app.callback(
+    Output("auth-container", "className"),
+    Input("toggle-signup", "n_clicks"),
+    Input("toggle-signin", "n_clicks"),
+    State("auth-container", "className"),
+    prevent_initial_call=True
+)
+def toggle_auth_panel(up_clicks, in_clicks, current_class):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return current_class
+    
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if trigger_id == "toggle-signup":
+        return "auth-container right-panel-active"
+    return "auth-container"
+
+
+@app.callback(
+    Output("auth-store", "data"),
+    Output("login-alert", "children"),
+    Output("url", "pathname", allow_duplicate=True),
+    Input("login-btn", "n_clicks"),
+    State("login-user", "value"),
+    State("login-pass", "value"),
+    prevent_initial_call=True
+)
+def handle_login(n, user, password):
+    if n is None or n == 0:
+        return dash.no_update, dash.no_update, dash.no_update
+    if verify_user(user, password):
+        return {"logged_in": True, "username": user}, None, "/"
+    return None, dbc.Alert("Invalid username or password", color="danger"), dash.no_update
+
+
+@app.callback(
+    Output("signup-alert", "children"),
+    Input("signup-btn", "n_clicks"),
+    State("signup-user", "value"),
+    State("signup-pass", "value"),
+    prevent_initial_call=True
+)
+def handle_signup(n, user, password):
+    if n is None or n == 0:
+        return dash.no_update
+    if not user or not password:
+        return dbc.Alert("Please fill all fields", color="warning")
+    success, msg = register_user(user, password)
+    if success:
+        return dbc.Alert(msg, color="success")
+    return dbc.Alert(msg, color="danger")
 
 
 @app.callback(Output("eda-selection-copy", "children"), Input("eda-selector", "value"))
