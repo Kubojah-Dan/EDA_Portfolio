@@ -606,3 +606,45 @@ label {
 .auth-btn-ghost:focus {
   outline: none;
 }
+
+/* Landing Page Additions */
+.landing-image-container img {
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+  filter: brightness(0.8);
+}
+
+.landing-image-container:hover img {
+  transform: scale(1.02);
+  filter: brightness(1);
+}
+
+.landing-image-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(5, 12, 22, 0.9));
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  color: #67d2ff;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+}
+
+.auth-shell .btn-link:hover {
+  color: #67d2ff !important;
+}
+
+.auth-shell .form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(103, 210, 255, 0.15);
+  border-color: #67d2ff;
+}
+
+.landing-shell {
+    background: #050c16;
+}
